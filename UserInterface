@@ -1,0 +1,65 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Random;
+public class UserInterface extends JFrame{
+	private JTextArea textArea;
+	private Color initialGreenHue;
+	
+	public UserInterface() {
+		JMenuBar menuBar = new JMenuBar();
+		JMenu menu = new JMenu ("Options");
+		//Creates menu items
+		JMenuItem menuItem1 = new JMenuItem("Print Date and Time");
+		JMenuItem menuItem2 = new JMenuItem("Write to log.txt");
+		JMenuItem menuItem3 = new JMenuItem("Change Background Color");
+		JMenuItem menuItem4 = new JMenuItem("Exit");
+		
+		//Add action listener to each menu item
+		menuItem1.addActionListener(e -> textArea.append(LocalDateTime.now().toString() + "\n"));
+		menuItem2.addActionListener(e ->{
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter("log.txt"))) {
+		        writer.write(textArea.getText());
+		        JOptionPane.showMessageDialog(this,  "Text successful saved to log.txt", "Success", JOptionPane.INFORMATION_MESSAGE);
+		    } catch (IOException ioException) {
+		        ioException.printStackTrace();
+		        JOptionPane.showMessageDialog(this, "Failed to save text to log.txt", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+		});
+		menuItem3.addActionListener(e -> { //change the background color
+			
+	                Random random = new Random();
+	                float hue = random.nextFloat() / 3.0f + 0.333f; // to get a hue of green
+	                initialGreenHue = Color.getHSBColor(hue, 1.0f, 1.0f);
+	                getContentPane().setBackground(initialGreenHue);
+			});
+		menuItem4.addActionListener(e -> System.exit(0)); // For Exit the application
+		
+		//Add menu items to the menu
+		menu.add(menuItem1);
+		menu.add(menuItem2);
+		menu.add(menuItem3);
+		menu.add(menuItem4);
+		menuBar.add(menu);
+		
+		//setting up the menu bar
+		setJMenuBar(menuBar);
+		textArea = new JTextArea();
+		add(new JScrollPane(textArea), BorderLayout.CENTER);
+		
+		//Helps set the title, size and default close operation
+		setTitle("User Interface Application");
+		setSize(500,300);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	//The main Method
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(() -> new UserInterface().setVisible(true));
+	}
+}
+
